@@ -18,7 +18,7 @@ import { FiMenu } from "react-icons/fi";
 import { IconType } from "react-icons";
 import { LinkItems } from "../../constants";
 
-export default function SideBar({ children }: { children: ReactNode }) {
+export default function SideBar({ children }: { children?: ReactNode }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <Box minH="100vh" bg={useColorModeValue("gray.100", "gray.900")}>
@@ -41,9 +41,9 @@ export default function SideBar({ children }: { children: ReactNode }) {
       </Drawer>
       {/* mobilenav */}
       <MobileNav display={{ base: "flex", md: "none" }} onOpen={onOpen} />
-      <Box ml={{ base: 0, md: 60 }} p="4">
+      {/* <Box ml={{ base: 0, md: 60 }} p="4">
         {children}
-      </Box>
+      </Box> */}
     </Box>
   );
 }
@@ -55,7 +55,7 @@ interface SidebarProps extends BoxProps {
 const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
   return (
     <Box
-      bg={useColorModeValue("white", "gray.900")}
+      bg={useColorModeValue("gray.200", "gray.900")}
       borderRight="1px"
       borderRightColor={useColorModeValue("gray.200", "gray.700")}
       w={{ base: "full", md: 60 }}
@@ -70,7 +70,7 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
         <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
       </Flex>
       {LinkItems.map((link) => (
-        <NavItem key={link.name} icon={link.icon}>
+        <NavItem key={link.name} icon={link.icon} link={link.link}>
           {link.name}
         </NavItem>
       ))}
@@ -80,12 +80,13 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
 
 interface NavItemProps extends FlexProps {
   icon: IconType;
+  link: string;
   children: any;
 }
-const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
+const NavItem = ({ icon, link, children, ...rest }: NavItemProps) => {
   return (
     <Link
-      href="#"
+      href={`${link}`}
       style={{ textDecoration: "none" }}
       _focus={{ boxShadow: "none" }}
     >
