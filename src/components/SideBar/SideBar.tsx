@@ -1,30 +1,34 @@
-import React, { ReactNode } from "react";
 import {
-  IconButton,
   Box,
+  BoxProps,
   CloseButton,
-  Flex,
-  Icon,
-  useColorModeValue,
-  Link,
   Drawer,
   DrawerContent,
-  Text,
-  useDisclosure,
-  BoxProps,
+  Flex,
   FlexProps,
+  Icon,
+  IconButton,
+  Link,
+  Text,
+  useColorModeValue,
+  useDisclosure,
 } from "@chakra-ui/react";
-import { FiMenu } from "react-icons/fi";
+import { ReactNode, useState } from "react";
 import { IconType } from "react-icons";
+import { FiMenu } from "react-icons/fi";
 import { LinkItems } from "../../constants";
+import { AddLease } from "../../pages/AddLease";
 
 export default function SideBar({ children }: { children?: ReactNode }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [activeTabName, setActiveTabName] = useState<string>("");
+
   return (
     <Box minH="100vh" bg={useColorModeValue("gray.100", "gray.900")}>
       <SidebarContent
         onClose={() => onClose}
         display={{ base: "none", md: "block" }}
+        setActiveTabName={setActiveTabName}
       />
       <Drawer
         autoFocus={false}
@@ -36,23 +40,40 @@ export default function SideBar({ children }: { children?: ReactNode }) {
         size="full"
       >
         <DrawerContent>
-          <SidebarContent onClose={onClose} />
+          <SidebarContent
+            onClose={onClose}
+            setActiveTabName={setActiveTabName}
+          />
         </DrawerContent>
       </Drawer>
       {/* mobilenav */}
       <MobileNav display={{ base: "flex", md: "none" }} onOpen={onOpen} />
-      {/* <Box ml={{ base: 0, md: 60 }} p="4">
-        {children}
-      </Box> */}
+      <Box ml={{ base: 0, md: 60 }} p="4">
+        {activeTabName === "Add New Lease" && (
+          <>
+            <AddLease setActiveTabName={setActiveTabName} />
+          </>
+        )}
+        {activeTabName === "Dashboard" && (
+          <>
+            <div>Dashboard</div>
+          </>
+        )}
+      </Box>
     </Box>
   );
 }
 
 interface SidebarProps extends BoxProps {
   onClose: () => void;
+  setActiveTabName: (value: string) => void;
 }
 
-const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
+const SidebarContent = ({
+  onClose,
+  setActiveTabName,
+  ...rest
+}: SidebarProps) => {
   return (
     <Box
       bg={useColorModeValue("gray.200", "gray.900")}
@@ -70,7 +91,11 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
         <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
       </Flex>
       {LinkItems.map((link) => (
-        <NavItem key={link.name} icon={link.icon} link={link.link}>
+        <NavItem
+          key={link.name}
+          icon={link.icon}
+          onClick={() => setActiveTabName && setActiveTabName(link.name)}
+        >
           {link.name}
         </NavItem>
       ))}
@@ -80,13 +105,13 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
 
 interface NavItemProps extends FlexProps {
   icon: IconType;
-  link: string;
+  link?: string;
   children: any;
 }
 const NavItem = ({ icon, link, children, ...rest }: NavItemProps) => {
   return (
     <Link
-      href={`${link}`}
+      href={link && `${link}`}
       style={{ textDecoration: "none" }}
       _focus={{ boxShadow: "none" }}
     >

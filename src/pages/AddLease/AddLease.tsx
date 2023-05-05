@@ -1,27 +1,25 @@
-import React, { useState } from "react";
 import {
-  Progress,
   Box,
-  ButtonGroup,
   Button,
-  Heading,
+  ButtonGroup,
   Flex,
   FormControl,
-  GridItem,
-  FormLabel,
-  Input,
-  Select,
-  SimpleGrid,
-  InputLeftAddon,
-  InputGroup,
-  Textarea,
   FormHelperText,
-  InputRightElement,
+  FormLabel,
+  GridItem,
+  Heading,
+  Input,
+  InputGroup,
+  InputLeftAddon,
+  Progress,
+  SimpleGrid,
+  Textarea,
+  useToast,
 } from "@chakra-ui/react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Form1 from "./Form1";
 import Form2 from "./Form2";
-import { useToast } from "@chakra-ui/react";
 
 export interface leaseDetailsProp {
   // TODO: update the lease details prop
@@ -95,7 +93,11 @@ const Form3 = () => {
   );
 };
 
-function AddLease() {
+export interface AddLeaseProp {
+  setActiveTabName: (value:string) => void;
+}
+
+function AddLease({ setActiveTabName } : AddLeaseProp) {
   const toast = useToast();
   const [step, setStep] = useState<number>(1);
   const [progress, setProgress] = useState<number>(33.33);
@@ -129,14 +131,20 @@ function AddLease() {
           mx="5%"
           isAnimated
         ></Progress>
-        {step === 1 ? <Form1 setLeaseDetails={setLeaseDetails}/> : step === 2 ? <Form2 /> : <Form3 />}
+        {step === 1 ? (
+          <Form1 setLeaseDetails={setLeaseDetails} />
+        ) : step === 2 ? (
+          <Form2 />
+        ) : (
+          <Form3 />
+        )}
         <ButtonGroup mt="5%" w="100%">
           <Flex w="100%" justifyContent="space-between">
             <Flex>
               <Button
                 onClick={() => {
                   if (step === 1) {
-                    navigate("/home");
+                    setActiveTabName("Dashboard");
                     return;
                   }
                   setStep((prev) => prev - 1);
