@@ -10,7 +10,7 @@ import {
 export interface LinkItemProps {
   name: string;
   icon: IconType;
-  link: string;
+  link?: string;
 }
 export const LinkItems: Array<LinkItemProps> = [
   { name: "Dashboard", icon: FiHome, link: "/dashboard" },
