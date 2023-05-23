@@ -18,11 +18,19 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Form1 from "./Form1";
+import LeaseBasicDetails from "./LeaseBasicDetails";
 import Form2 from "./Form2";
 
 export interface leaseDetailsProp {
-  // TODO: update the lease details prop
+  entity: string;
+  leaseName: string;
+  capCost: number;
+  residualValue: number;
+  internalBorrowingRate: number;
+  leaseTerm: number;
+  initialPayment: number;
+  leaseStartDate: string;
+  leaseEndingDate: string;
 }
 
 // TODO: upadte Form names, Form prop and data structure
@@ -104,13 +112,15 @@ function AddLease({ setActiveTabName } : AddLeaseProp) {
   const navigate = useNavigate();
 
   const [leaseDetails, setLeaseDetails] = useState<leaseDetailsProp>({
-    name: "",
-    address: "",
-    email: "",
-    city: "",
-    phone: "",
-    state: "",
-    zip: "",
+    entity: "",
+    leaseName: "",
+    capCost: 0,
+    residualValue: 0,
+    internalBorrowingRate: 0,
+    leaseTerm: 0,
+    initialPayment: 0,
+    leaseStartDate: "",
+    leaseEndingDate: "",
   });
 
   return (
@@ -132,7 +142,10 @@ function AddLease({ setActiveTabName } : AddLeaseProp) {
           isAnimated
         ></Progress>
         {step === 1 ? (
-          <Form1 setLeaseDetails={setLeaseDetails} />
+          <LeaseBasicDetails
+            setLeaseDetails={setLeaseDetails}
+            leaseDetails={leaseDetails}
+          />
         ) : step === 2 ? (
           <Form2 />
         ) : (
