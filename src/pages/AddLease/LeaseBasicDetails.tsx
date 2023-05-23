@@ -31,7 +31,7 @@ const LeaseBasicDetails = ({
 }: LeaseBasicDetailsProp) => {
   const [show, setShow] = useState(false);
   const handleClick = () => setShow(!show);
-  console.log("leaseDetails123", leaseDetails);
+
   return (
     <>
       <Heading w="100%" textAlign={"center"} fontWeight="normal" mb="2%">
