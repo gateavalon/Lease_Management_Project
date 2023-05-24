@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from "react";
 import {
-  Button,
   Heading,
   Flex,
   FormControl,
   FormLabel,
   Input,
-  InputGroup,
-  InputRightElement,
   NumberInput,
   NumberInputField,
   NumberInputStepper,
@@ -18,6 +15,7 @@ import {
   SliderFilledTrack,
   SliderThumb,
 } from "@chakra-ui/react";
+import moment from "moment";
 import { leaseDetailsProp } from "./AddLease";
 
 interface LeaseBasicDetailsProp {
@@ -32,6 +30,18 @@ const LeaseBasicDetails = ({
   const [show, setShow] = useState(false);
   const handleClick = () => setShow(!show);
 
+  useEffect(() => {
+    if (leaseDetails.leaseStartDate !== "" || !leaseDetails.leaseTerm) {
+      const startDate = moment(leaseDetails.leaseStartDate);
+      const endDate = startDate.add(leaseDetails.leaseTerm, "months");
+      setLeaseDetails({
+        ...leaseDetails,
+        leaseEndingDate: endDate.format("YYYY-MM-DD"),
+      });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [leaseDetails.leaseTerm, leaseDetails.leaseStartDate, setLeaseDetails]);
+
   return (
     <>
       <Heading w="100%" textAlign={"center"} fontWeight="normal" mb="2%">
@@ -44,7 +54,7 @@ const LeaseBasicDetails = ({
           </FormLabel>
           <Input
             id="entity-name"
-            onChange={(e) =>
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setLeaseDetails({ ...leaseDetails, entity: e.target.value })
             }
           />
@@ -56,7 +66,7 @@ const LeaseBasicDetails = ({
           </FormLabel>
           <Input
             id="lease-name"
-            onChange={(e) =>
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setLeaseDetails({ ...leaseDetails, leaseName: e.target.value })
             }
           />
@@ -69,7 +79,7 @@ const LeaseBasicDetails = ({
             Cap Cost
           </FormLabel>
           <NumberInput
-            onChange={(value) =>
+            onChange={(value: string) =>
               setLeaseDetails({
                 ...leaseDetails,
                 capCost: parseInt(value),
@@ -89,7 +99,7 @@ const LeaseBasicDetails = ({
             Residual Value
           </FormLabel>
           <NumberInput
-            onChange={(value) =>
+            onChange={(value: string) =>
               setLeaseDetails({
                 ...leaseDetails,
                 residualValue: parseInt(value),
@@ -113,7 +123,7 @@ const LeaseBasicDetails = ({
           <NumberInput
             min={0}
             value={leaseDetails.internalBorrowingRate}
-            onChange={(value) =>
+            onChange={(value: string) =>
               setLeaseDetails({
                 ...leaseDetails,
                 internalBorrowingRate: parseInt(value),
@@ -130,7 +140,7 @@ const LeaseBasicDetails = ({
             flex="1"
             focusThumbOnChange={false}
             value={leaseDetails.internalBorrowingRate}
-            onChange={(value) =>
+            onChange={(value: number) =>
               setLeaseDetails({
                 ...leaseDetails,
                 internalBorrowingRate: value,
@@ -154,7 +164,7 @@ const LeaseBasicDetails = ({
           </FormLabel>
           <NumberInput
             min={0}
-            onChange={(value) =>
+            onChange={(value: string) =>
               setLeaseDetails({
                 ...leaseDetails,
                 leaseTerm: parseInt(value),
@@ -178,7 +188,7 @@ const LeaseBasicDetails = ({
           <Input
             type="date"
             id="lease-start-date"
-            onChange={(e) =>
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setLeaseDetails({
                 ...leaseDetails,
                 leaseStartDate: e.target.value,
@@ -194,7 +204,8 @@ const LeaseBasicDetails = ({
           <Input
             type="date"
             id="lease-term"
-            onChange={(e) =>
+            value={leaseDetails.leaseEndingDate}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setLeaseDetails({
                 ...leaseDetails,
                 leaseEndingDate: e.target.value,
