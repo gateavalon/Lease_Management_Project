@@ -19,7 +19,8 @@ import {
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LeaseBasicDetails from "./LeaseBasicDetails";
-import Form2 from "./Form2";
+import LeaseRentDetails from "./LeaseRentDetails";
+import LeaseRentDetailsTable from "./LeaseRentDetailsTable";
 
 export interface leaseDetailsProp {
   entity: string;
@@ -31,6 +32,9 @@ export interface leaseDetailsProp {
   initialPayment: number;
   leaseStartDate: string;
   leaseEndingDate: string;
+  frequency: string;
+  rentalAmount: number;
+  calMethod: string;
 }
 
 // TODO: upadte Form names, Form prop and data structure
@@ -102,10 +106,10 @@ const Form3 = () => {
 };
 
 export interface AddLeaseProp {
-  setActiveTabName: (value:string) => void;
+  setActiveTabName: (value: string) => void;
 }
 
-function AddLease({ setActiveTabName } : AddLeaseProp) {
+function AddLease({ setActiveTabName }: AddLeaseProp) {
   const toast = useToast();
   const [step, setStep] = useState<number>(1);
   const [progress, setProgress] = useState<number>(33.33);
@@ -121,6 +125,9 @@ function AddLease({ setActiveTabName } : AddLeaseProp) {
     initialPayment: 0,
     leaseStartDate: "",
     leaseEndingDate: "",
+    frequency: "",
+    rentalAmount: 0,
+    calMethod: "",
   });
 
   return (
@@ -134,22 +141,22 @@ function AddLease({ setActiveTabName } : AddLeaseProp) {
         m="10px auto"
         as="form"
       >
-        <Progress
-          hasStripe
-          value={progress}
-          mb="5%"
-          mx="5%"
-          isAnimated
-        ></Progress>
+        <Progress value={progress} mb="5%" mx="5%"></Progress>
         {step === 1 ? (
           <LeaseBasicDetails
             setLeaseDetails={setLeaseDetails}
             leaseDetails={leaseDetails}
           />
         ) : step === 2 ? (
-          <Form2 />
+          <LeaseRentDetails
+            setLeaseDetails={setLeaseDetails}
+            leaseDetails={leaseDetails}
+          />
         ) : (
-          <Form3 />
+          <LeaseRentDetailsTable
+            setLeaseDetails={setLeaseDetails}
+            leaseDetails={leaseDetails}
+          />
         )}
         <ButtonGroup mt="5%" w="100%">
           <Flex w="100%" justifyContent="space-between">

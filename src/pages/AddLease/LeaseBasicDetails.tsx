@@ -18,7 +18,7 @@ import {
 import moment from "moment";
 import { leaseDetailsProp } from "./AddLease";
 
-interface LeaseBasicDetailsProp {
+export interface LeaseBasicDetailsProp {
   setLeaseDetails: (leaseDetails: leaseDetailsProp) => void;
   leaseDetails: leaseDetailsProp;
 }
@@ -82,7 +82,7 @@ const LeaseBasicDetails = ({
             onChange={(value: string) =>
               setLeaseDetails({
                 ...leaseDetails,
-                capCost: parseInt(value),
+                initialPayment: parseFloat(value),
               })
             }
           >
@@ -102,7 +102,7 @@ const LeaseBasicDetails = ({
             onChange={(value: string) =>
               setLeaseDetails({
                 ...leaseDetails,
-                residualValue: parseInt(value),
+                residualValue: parseFloat(value),
               })
             }
           >
@@ -126,7 +126,7 @@ const LeaseBasicDetails = ({
             onChange={(value: string) =>
               setLeaseDetails({
                 ...leaseDetails,
-                internalBorrowingRate: parseInt(value),
+                internalBorrowingRate: parseFloat(value),
               })
             }
           >
@@ -170,6 +170,7 @@ const LeaseBasicDetails = ({
                 leaseTerm: parseInt(value),
               })
             }
+            value={leaseDetails.leaseTerm}
           >
             <NumberInputField />
             <NumberInputStepper>
@@ -194,6 +195,7 @@ const LeaseBasicDetails = ({
                 leaseStartDate: e.target.value,
               })
             }
+            value={leaseDetails.leaseStartDate}
           />
         </FormControl>
 
