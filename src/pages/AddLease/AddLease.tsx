@@ -37,74 +37,6 @@ export interface leaseDetailsProp {
   calMethod: string;
 }
 
-// TODO: upadte Form names, Form prop and data structure
-const Form3 = () => {
-  return (
-    <>
-      <Heading w="100%" textAlign={"center"} fontWeight="normal">
-        Social Handles
-      </Heading>
-      <SimpleGrid columns={1} spacing={6}>
-        <FormControl as={GridItem} colSpan={[3, 2]}>
-          <FormLabel
-            fontSize="sm"
-            fontWeight="md"
-            color="gray.700"
-            _dark={{
-              color: "gray.50",
-            }}
-          >
-            Website
-          </FormLabel>
-          <InputGroup size="sm">
-            <InputLeftAddon
-              bg="gray.50"
-              _dark={{
-                bg: "gray.800",
-              }}
-              color="gray.500"
-              rounded="md"
-            >
-              http://
-            </InputLeftAddon>
-            <Input
-              type="tel"
-              placeholder="www.example.com"
-              focusBorderColor="brand.400"
-              rounded="md"
-            />
-          </InputGroup>
-        </FormControl>
-
-        <FormControl id="email" mt={1}>
-          <FormLabel
-            fontSize="sm"
-            fontWeight="md"
-            color="gray.700"
-            _dark={{
-              color: "gray.50",
-            }}
-          >
-            About
-          </FormLabel>
-          <Textarea
-            placeholder="you@example.com"
-            rows={3}
-            shadow="sm"
-            focusBorderColor="brand.400"
-            fontSize={{
-              sm: "sm",
-            }}
-          />
-          <FormHelperText>
-            Brief description for your profile. URLs are hyperlinked.
-          </FormHelperText>
-        </FormControl>
-      </SimpleGrid>
-    </>
-  );
-};
-
 export interface AddLeaseProp {
   setActiveTabName: (value: string) => void;
 }
@@ -152,11 +84,13 @@ function AddLease({ setActiveTabName }: AddLeaseProp) {
             setLeaseDetails={setLeaseDetails}
             leaseDetails={leaseDetails}
           />
-        ) : (
+        ) : step === 3 ? (
           <LeaseRentDetailsTable
             setLeaseDetails={setLeaseDetails}
             leaseDetails={leaseDetails}
           />
+        ): (
+          <div>Details of ROU, Liability, Dep, Interest Exp Calculation</div>
         )}
         <ButtonGroup mt="5%" w="100%">
           <Flex w="100%" justifyContent="space-between">
@@ -168,7 +102,7 @@ function AddLease({ setActiveTabName }: AddLeaseProp) {
                     return;
                   }
                   setStep((prev) => prev - 1);
-                  setProgress(progress - 33.33);
+                  setProgress(progress - 25);
                 }}
                 colorScheme="teal"
                 variant="solid"
@@ -179,13 +113,13 @@ function AddLease({ setActiveTabName }: AddLeaseProp) {
               </Button>
               <Button
                 w="7rem"
-                isDisabled={step === 3}
+                isDisabled={step === 4}
                 onClick={() => {
                   setStep(step + 1);
-                  if (step === 3) {
+                  if (step === 4) {
                     setProgress(100);
                   } else {
-                    setProgress(progress + 33.33);
+                    setProgress(progress + 25);
                   }
                 }}
                 colorScheme="teal"
@@ -194,7 +128,7 @@ function AddLease({ setActiveTabName }: AddLeaseProp) {
                 Next
               </Button>
             </Flex>
-            {step === 3 ? (
+            {step === 4 ? (
               <Button
                 w="7rem"
                 colorScheme="red"
