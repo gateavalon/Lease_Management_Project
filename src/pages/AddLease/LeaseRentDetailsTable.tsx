@@ -25,6 +25,7 @@ import { LeaseBasicDetailsProp } from "./LeaseBasicDetails";
 interface leasePaymentProp {
   period: number;
   leasePayment: number;
+  otherPayment: number;
 }
 
 const LeaseRentDetailsTable = ({
@@ -47,12 +48,32 @@ const LeaseRentDetailsTable = ({
     useState<leasePaymentProp>({
       period: 0,
       leasePayment: 0,
-      // otherPayment: 0,
+      otherPayment: 0,
     });
-
   const [manualLeasePayments, setManualLeasePayments] = useState<
     leasePaymentProp[]
   >([]);
+  const [rouAsset, setROUAsset] = useState<number>(0);
+  const [depreciation, setDepreciation] = useState<number>(0);
+
+  useEffect(() => {
+    const handleCalculate = () => {
+      const presentValues = manualLeasePayments.map((payment) => {
+        const { period, leasePayment, otherPayment } = payment;
+        const presentValue =
+          (leasePayment + otherPayment) /
+          Math.pow(1 + internalBorrowingRate / 100, period);
+        return presentValue;
+      });
+
+      const rouAssetValue = presentValues.reduce((acc, val) => acc + val, 0);
+      setROUAsset(parseFloat(rouAssetValue.toFixed(2)));
+
+      const depreciationExpense = rouAssetValue / leaseTerm;
+      setDepreciation(parseFloat(depreciationExpense.toFixed(2)));
+    };
+    handleCalculate();
+  }, [internalBorrowingRate, leaseTerm, manualLeasePayments]);
 
   const leasePeriods = frequency.includes("Quarterly")
     ? leaseTerm / 3
@@ -97,6 +118,7 @@ const LeaseRentDetailsTable = ({
                         <NumberInput
                           onChange={(value: string) => {
                             setSingleLeasePayment({
+                              ...singleLeasePayment,
                               period: period + 1,
                               leasePayment: parseFloat(value),
                             });
@@ -136,12 +158,41 @@ const LeaseRentDetailsTable = ({
                       </FormControl>
                     </Td>
                     <Td>{frequency}</Td>
-                    {/* to update other expense */}
+
                     <Td isNumeric>
                       <FormControl mr="3%">
                         <NumberInput
-                          onChange={(value: string) => {}}
-                          onBlur={() => {}}
+                          onChange={(value: string) => {
+                            setSingleLeasePayment({
+                              ...singleLeasePayment,
+                              otherPayment: parseFloat(value),
+                            });
+                          }}
+                          onBlur={() => {
+                            const existingValue = manualLeasePayments.find(
+                              (payment) => payment.period === period + 1
+                            );
+                            if (existingValue && existingValue.leasePayment) {
+                              const updatedList = manualLeasePayments.map(
+                                (payment) => {
+                                  if (payment.period === period + 1) {
+                                    return {
+                                      ...payment,
+                                      otherPayment:
+                                        singleLeasePayment.otherPayment,
+                                    };
+                                  }
+                                  return payment;
+                                }
+                              );
+                              setManualLeasePayments(updatedList);
+                              return;
+                            }
+                            setManualLeasePayments([
+                              ...manualLeasePayments,
+                              singleLeasePayment,
+                            ]);
+                          }}
                         >
                           <NumberInputField />
                           <NumberInputStepper>
