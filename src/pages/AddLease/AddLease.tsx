@@ -35,6 +35,8 @@ export interface leaseDetailsProp {
   frequency: string;
   rentalAmount: number;
   calMethod: string;
+  rouAssetValue: number;
+  depreciationExpense: number;
 }
 
 export interface AddLeaseProp {
@@ -60,6 +62,8 @@ function AddLease({ setActiveTabName }: AddLeaseProp) {
     frequency: "",
     rentalAmount: 0,
     calMethod: "",
+    rouAssetValue: 0,
+    depreciationExpense: 0,
   });
 
   return (

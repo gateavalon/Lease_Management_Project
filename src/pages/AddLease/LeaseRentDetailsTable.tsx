@@ -56,9 +56,13 @@ const LeaseRentDetailsTable = ({
   const [rouAsset, setROUAsset] = useState<number>(0);
   const [depreciation, setDepreciation] = useState<number>(0);
 
+   const leasePeriods = frequency.includes("Quarterly")
+     ? leaseTerm / 3
+     : leaseTerm;
+
   useEffect(() => {
     const handleCalculate = () => {
-      const presentValues = manualLeasePayments.map((payment) => {
+      const rouLeaseLiability = manualLeasePayments.map((payment) => {
         const { period, leasePayment, otherPayment } = payment;
         const presentValue =
           (leasePayment + otherPayment) /
@@ -66,18 +70,23 @@ const LeaseRentDetailsTable = ({
         return presentValue;
       });
 
-      const rouAssetValue = presentValues.reduce((acc, val) => acc + val, 0);
-      setROUAsset(parseFloat(rouAssetValue.toFixed(2)));
+      const rouAssetValue = rouLeaseLiability.reduce(
+        (acc, val) => acc + val,
+        0
+      );
+      setLeaseDetails({
+        ...leaseDetails,
+        rouAssetValue: parseFloat(rouAssetValue.toFixed(2)),
+      });
 
-      const depreciationExpense = rouAssetValue / leaseTerm;
-      setDepreciation(parseFloat(depreciationExpense.toFixed(2)));
+      const depreciationExpense = rouAssetValue / leasePeriods;
+      setLeaseDetails({
+        ...leaseDetails,
+        depreciationExpense: parseFloat(depreciationExpense.toFixed(2)),
+      });
     };
     handleCalculate();
-  }, [internalBorrowingRate, leaseTerm, manualLeasePayments]);
-
-  const leasePeriods = frequency.includes("Quarterly")
-    ? leaseTerm / 3
-    : leaseTerm;
+  }, [internalBorrowingRate, leasePeriods, manualLeasePayments, setLeaseDetails]);
 
   return (
     <>
