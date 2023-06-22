@@ -2,11 +2,6 @@ import React, { useState, useEffect } from "react";
 import {
   Heading,
   FormControl,
-  GridItem,
-  FormLabel,
-  Input,
-  Select,
-  Flex,
   NumberInput,
   NumberInputField,
   NumberInputStepper,
@@ -22,7 +17,7 @@ import {
 } from "@chakra-ui/react";
 import { LeaseBasicDetailsProp } from "./LeaseBasicDetails";
 
-interface leasePaymentProp {
+export interface leasePaymentProp {
   period: number;
   leasePayment: number;
   otherPayment: number;
@@ -33,13 +28,9 @@ const LeaseRentDetailsTable = ({
   leaseDetails,
 }: LeaseBasicDetailsProp) => {
   const {
-    capCost,
-    residualValue,
     internalBorrowingRate,
     leaseTerm,
-    initialPayment,
     frequency,
-    rentalAmount,
     leaseStartDate,
     calMethod,
   } = leaseDetails;
@@ -53,12 +44,10 @@ const LeaseRentDetailsTable = ({
   const [manualLeasePayments, setManualLeasePayments] = useState<
     leasePaymentProp[]
   >([]);
-  const [rouAsset, setROUAsset] = useState<number>(0);
-  const [depreciation, setDepreciation] = useState<number>(0);
 
-   const leasePeriods = frequency.includes("Quarterly")
-     ? leaseTerm / 3
-     : leaseTerm;
+  const leasePeriods = frequency.includes("Quarterly")
+    ? leaseTerm / 3
+    : leaseTerm;
 
   useEffect(() => {
     const handleCalculate = () => {
@@ -70,23 +59,24 @@ const LeaseRentDetailsTable = ({
         return presentValue;
       });
 
-      const rouAssetValue = rouLeaseLiability.reduce(
-        (acc, val) => acc + val,
-        0
-      );
-      setLeaseDetails({
-        ...leaseDetails,
-        rouAssetValue: parseFloat(rouAssetValue.toFixed(2)),
-      });
+      const ROUValue = rouLeaseLiability.reduce((acc, val) => acc + val, 0);
+      const depreciationExpense = ROUValue / leasePeriods;
 
-      const depreciationExpense = rouAssetValue / leasePeriods;
       setLeaseDetails({
         ...leaseDetails,
+        rouAssetValue: parseFloat(ROUValue.toFixed(2)),
         depreciationExpense: parseFloat(depreciationExpense.toFixed(2)),
+        manualLeasePayments: manualLeasePayments,
       });
     };
     handleCalculate();
-  }, [internalBorrowingRate, leasePeriods, manualLeasePayments, setLeaseDetails]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    internalBorrowingRate,
+    leasePeriods,
+    manualLeasePayments,
+    setLeaseDetails,
+  ]);
 
   return (
     <>
@@ -94,128 +84,130 @@ const LeaseRentDetailsTable = ({
         Lease Rent Details Table
       </Heading>
       <TableContainer>
-        <Table variant="striped" colorScheme="teal" size="md">
-          <Thead>
-            <Tr>
-              <Th>Date</Th>
-              <Th isNumeric>Rent</Th>
-              <Th>Frequency</Th>
-              <Th isNumeric>Other expense</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {leasePeriods > 0 &&
-              Array.from(Array(leasePeriods).keys()).map((period) => {
-                const currentPeriod = new Date(leaseStartDate);
-                if (frequency.includes("Quarterly")) {
-                  currentPeriod.setMonth(
-                    currentPeriod.getMonth() + 3 * (period + 1)
-                  );
-                } else if (frequency.includes("Monthly")) {
-                  currentPeriod.setMonth(
-                    currentPeriod.getMonth() + (period + 1)
-                  );
-                }
-                const currentPeriodString =
-                  currentPeriod.toLocaleDateString("en-GB");
+        {calMethod === "Manual Calculation" && (
+          <Table variant="striped" colorScheme="teal" size="md">
+            <Thead>
+              <Tr>
+                <Th>Date</Th>
+                <Th isNumeric>Rent</Th>
+                <Th>Frequency</Th>
+                <Th isNumeric>Other expense</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {leasePeriods > 0 &&
+                Array.from(Array(leasePeriods).keys()).map((period) => {
+                  const currentPeriod = new Date(leaseStartDate);
+                  if (frequency.includes("Quarterly")) {
+                    currentPeriod.setMonth(
+                      currentPeriod.getMonth() + 3 * (period + 1)
+                    );
+                  } else if (frequency.includes("Monthly")) {
+                    currentPeriod.setMonth(
+                      currentPeriod.getMonth() + (period + 1)
+                    );
+                  }
+                  const currentPeriodString =
+                    currentPeriod.toLocaleDateString("en-GB");
 
-                return (
-                  <Tr key={`${period}-${frequency}`}>
-                    <Td>{currentPeriodString}</Td>
-                    <Td isNumeric>
-                      <FormControl mr="3%">
-                        <NumberInput
-                          onChange={(value: string) => {
-                            setSingleLeasePayment({
-                              ...singleLeasePayment,
-                              period: period + 1,
-                              leasePayment: parseFloat(value),
-                            });
-                          }}
-                          onBlur={() => {
-                            const existingValue = manualLeasePayments.find(
-                              (payment) => payment.period === period + 1
-                            );
-                            if (existingValue && existingValue.leasePayment) {
-                              const updatedList = manualLeasePayments.map(
-                                (payment) => {
-                                  if (payment.period === period + 1) {
-                                    return {
-                                      ...payment,
-                                      leasePayment:
-                                        singleLeasePayment.leasePayment,
-                                    };
-                                  }
-                                  return payment;
-                                }
+                  return (
+                    <Tr key={`${period}-${frequency}`}>
+                      <Td>{currentPeriodString}</Td>
+                      <Td isNumeric>
+                        <FormControl mr="3%">
+                          <NumberInput
+                            onChange={(value: string) => {
+                              setSingleLeasePayment({
+                                ...singleLeasePayment,
+                                period: period + 1,
+                                leasePayment: parseFloat(value),
+                              });
+                            }}
+                            onBlur={() => {
+                              const existingValue = manualLeasePayments.find(
+                                (payment) => payment.period === period + 1
                               );
-                              setManualLeasePayments(updatedList);
-                              return;
-                            }
-                            setManualLeasePayments([
-                              ...manualLeasePayments,
-                              singleLeasePayment,
-                            ]);
-                          }}
-                        >
-                          <NumberInputField />
-                          <NumberInputStepper>
-                            <NumberIncrementStepper />
-                            <NumberDecrementStepper />
-                          </NumberInputStepper>
-                        </NumberInput>
-                      </FormControl>
-                    </Td>
-                    <Td>{frequency}</Td>
+                              if (existingValue && existingValue.leasePayment) {
+                                const updatedList = manualLeasePayments.map(
+                                  (payment) => {
+                                    if (payment.period === period + 1) {
+                                      return {
+                                        ...payment,
+                                        leasePayment:
+                                          singleLeasePayment.leasePayment,
+                                      };
+                                    }
+                                    return payment;
+                                  }
+                                );
+                                setManualLeasePayments(updatedList);
+                                return;
+                              }
+                              setManualLeasePayments([
+                                ...manualLeasePayments,
+                                singleLeasePayment,
+                              ]);
+                            }}
+                          >
+                            <NumberInputField />
+                            <NumberInputStepper>
+                              <NumberIncrementStepper />
+                              <NumberDecrementStepper />
+                            </NumberInputStepper>
+                          </NumberInput>
+                        </FormControl>
+                      </Td>
+                      <Td>{frequency}</Td>
 
-                    <Td isNumeric>
-                      <FormControl mr="3%">
-                        <NumberInput
-                          onChange={(value: string) => {
-                            setSingleLeasePayment({
-                              ...singleLeasePayment,
-                              otherPayment: parseFloat(value),
-                            });
-                          }}
-                          onBlur={() => {
-                            const existingValue = manualLeasePayments.find(
-                              (payment) => payment.period === period + 1
-                            );
-                            if (existingValue && existingValue.leasePayment) {
-                              const updatedList = manualLeasePayments.map(
-                                (payment) => {
-                                  if (payment.period === period + 1) {
-                                    return {
-                                      ...payment,
-                                      otherPayment:
-                                        singleLeasePayment.otherPayment,
-                                    };
-                                  }
-                                  return payment;
-                                }
+                      <Td isNumeric>
+                        <FormControl mr="3%">
+                          <NumberInput
+                            onChange={(value: string) => {
+                              setSingleLeasePayment({
+                                ...singleLeasePayment,
+                                otherPayment: parseFloat(value),
+                              });
+                            }}
+                            onBlur={() => {
+                              const existingValue = manualLeasePayments.find(
+                                (payment) => payment.period === period + 1
                               );
-                              setManualLeasePayments(updatedList);
-                              return;
-                            }
-                            setManualLeasePayments([
-                              ...manualLeasePayments,
-                              singleLeasePayment,
-                            ]);
-                          }}
-                        >
-                          <NumberInputField />
-                          <NumberInputStepper>
-                            <NumberIncrementStepper />
-                            <NumberDecrementStepper />
-                          </NumberInputStepper>
-                        </NumberInput>
-                      </FormControl>
-                    </Td>
-                  </Tr>
-                );
-              })}
-          </Tbody>
-        </Table>
+                              if (existingValue && existingValue.leasePayment) {
+                                const updatedList = manualLeasePayments.map(
+                                  (payment) => {
+                                    if (payment.period === period + 1) {
+                                      return {
+                                        ...payment,
+                                        otherPayment:
+                                          singleLeasePayment.otherPayment,
+                                      };
+                                    }
+                                    return payment;
+                                  }
+                                );
+                                setManualLeasePayments(updatedList);
+                                return;
+                              }
+                              setManualLeasePayments([
+                                ...manualLeasePayments,
+                                singleLeasePayment,
+                              ]);
+                            }}
+                          >
+                            <NumberInputField />
+                            <NumberInputStepper>
+                              <NumberIncrementStepper />
+                              <NumberDecrementStepper />
+                            </NumberInputStepper>
+                          </NumberInput>
+                        </FormControl>
+                      </Td>
+                    </Tr>
+                  );
+                })}
+            </Tbody>
+          </Table>
+        )}
       </TableContainer>
     </>
   );
