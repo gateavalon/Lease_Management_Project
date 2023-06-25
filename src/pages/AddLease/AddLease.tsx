@@ -9,9 +9,12 @@ import {
 import { useState } from "react";
 // import { useNavigate } from "react-router-dom";
 import LeaseBasicDetails from "./LeaseBasicDetails";
-import LeaseRentDetails from "./LeaseRentDetails";
-import LeaseRentDetailsTable, {leasePaymentProp} from "./LeaseRentDetailsTable";
+import LeaseDocUpload from "./LeaseDocUpload";
 import LeaseRentCalculations from "./LeaseRentCalculation";
+import LeaseRentDetails from "./LeaseRentDetails";
+import LeaseRentDetailsTable, {
+  leasePaymentProp,
+} from "./LeaseRentDetailsTable";
 
 export interface leaseDetailsProp {
   entity: string;
@@ -58,7 +61,7 @@ function AddLease({ setActiveTabName }: AddLeaseProp) {
     depreciationExpense: 0,
     manualLeasePayments: [],
   });
-
+  // console.log("manualLeasePayments123", leaseDetails.manualLeasePaymentsSaved);
   return (
     <>
       <Box
@@ -91,6 +94,11 @@ function AddLease({ setActiveTabName }: AddLeaseProp) {
             setLeaseDetails={setLeaseDetails}
             leaseDetails={leaseDetails}
           />
+        ) : step === 5 ? (
+          <LeaseDocUpload
+            setLeaseDetails={setLeaseDetails}
+            leaseDetails={leaseDetails}
+          />
         ) : (
           <div>test</div>
         )}
@@ -104,7 +112,7 @@ function AddLease({ setActiveTabName }: AddLeaseProp) {
                     return;
                   }
                   setStep((prev) => prev - 1);
-                  setProgress(progress - 20);
+                  setProgress(progress - 16.67);
                 }}
                 colorScheme="teal"
                 variant="solid"
@@ -115,13 +123,13 @@ function AddLease({ setActiveTabName }: AddLeaseProp) {
               </Button>
               <Button
                 w="7rem"
-                isDisabled={step === 5}
+                isDisabled={step === 6}
                 onClick={() => {
                   setStep(step + 1);
-                  if (step === 4) {
+                  if (step === 6) {
                     setProgress(100);
                   } else {
-                    setProgress(progress + 20);
+                    setProgress(progress + 16.67);
                   }
                 }}
                 colorScheme="teal"
@@ -130,7 +138,7 @@ function AddLease({ setActiveTabName }: AddLeaseProp) {
                 Next
               </Button>
             </Flex>
-            {step === 5 ? (
+            {step === 6 ? (
               <Button
                 w="7rem"
                 colorScheme="red"

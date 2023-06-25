@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from "react";
 import {
-  Heading,
   FormControl,
+  Heading,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
   NumberInput,
   NumberInputField,
   NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
   Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
   TableContainer,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
 } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 import { LeaseBasicDetailsProp } from "./LeaseBasicDetails";
 
 export interface leasePaymentProp {

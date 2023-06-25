@@ -1,14 +1,18 @@
-import React, { useState, useEffect } from "react";
 import {
+  Button,
+  Flex,
   Heading,
+  Spacer,
   Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
   TableContainer,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
 } from "@chakra-ui/react";
+import { useEffect, useRef, useState } from "react";
+import { useDownloadExcel } from "react-export-table-to-excel";
 import { LeaseBasicDetailsProp } from "./LeaseBasicDetails";
 
 interface LeasePaymentScheduleProp {
@@ -23,6 +27,7 @@ const LeaseRentCalculations = ({
   setLeaseDetails,
   leaseDetails,
 }: LeaseBasicDetailsProp) => {
+  const tableRef = useRef(null);
   const {
     internalBorrowingRate,
     leaseTerm,
@@ -30,6 +35,12 @@ const LeaseRentCalculations = ({
     rouAssetValue,
     manualLeasePayments,
   } = leaseDetails;
+
+  const { onDownload } = useDownloadExcel({
+    currentTableRef: tableRef.current,
+    filename: "Amortisation table",
+    sheet: "Amortisation",
+  });
 
   const leasePeriods = frequency.includes("Quarterly")
     ? leaseTerm / 3
@@ -82,8 +93,14 @@ const LeaseRentCalculations = ({
       <Heading w="100%" textAlign={"center"} fontWeight="normal" mb="2%">
         Lease Rent Details Table
       </Heading>
+      <Flex>
+        <Spacer />
+        <Button colorScheme="teal" size="md" onClick={onDownload}>
+          Exprot to Excel
+        </Button>
+      </Flex>
       <TableContainer>
-        <Table variant="striped" colorScheme="teal" size="md">
+        <Table variant="striped" colorScheme="teal" size="md" ref={tableRef}>
           <Thead>
             <Tr>
               <Th>Year</Th>
